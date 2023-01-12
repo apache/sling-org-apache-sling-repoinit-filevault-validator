@@ -55,18 +55,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDataValidator {
 
-    private final RepoInitParserService parser;
-    
-    public RepoInitValidator() {
-        parser = new RepoInitParserService();
-    }
-    enum OsgiConfigurationSerialization {
-        CFG,
-        CFG_JSON,
-        CONFIG
-    }
+    private static final String SLING_OSGI_CONFIG_NODETYPE = "sling:OsgiConfig";
 
-    private static final String OSGI_CONFIG_NAME = "org\\.apache\\.sling\\.jcr\\.repoinit\\.RepositoryInitializer(~|-).*";
+    private static final String OSGI_CONFIG_NAME = "org\\.apache\\.sling\\.jcr\\.repoinit\\.RepositoryInitializer([~-]).*";
 
     private static final Pattern OSGI_CONFIG_NODE_NAME_PATTERN = Pattern.compile(OSGI_CONFIG_NAME);
 
@@ -74,6 +65,18 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
      * https://sling.apache.org/documentation/bundles/configuration-installer-factory.html#configuration-serialization-formats
      */
     private static final Pattern OSGI_CONFIG_FILE_NAME_PATTERN = Pattern.compile(OSGI_CONFIG_NAME + "\\.(config|cfg\\.json|cfg)");
+
+    enum OsgiConfigurationSerialization {
+        CFG,
+        CFG_JSON,
+        CONFIG
+    }
+
+    private final RepoInitParserService parser;
+
+    public RepoInitValidator() {
+        parser = new RepoInitParserService();
+    }
 
     @Nullable
     public Collection<ValidationMessage> done() {
@@ -83,11 +86,11 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
     @Override
     public @Nullable Collection<ValidationMessage> validate(@NotNull DocViewNode2 node, @NotNull NodeContext nodeContext,
             boolean isRoot) {
-        if ("sling:OsgiConfig".equals(node.getPrimaryType().orElse("")) && OSGI_CONFIG_NODE_NAME_PATTERN.matcher(Text.getName(nodeContext.getNodePath())).matches()) {
+        if (SLING_OSGI_CONFIG_NODETYPE.equals(node.getPrimaryType().orElse("")) && OSGI_CONFIG_NODE_NAME_PATTERN.matcher(Text.getName(nodeContext.getNodePath())).matches()) {
             Optional<DocViewProperty2> scriptsProperty = node.getProperty(NameFactoryImpl.getInstance().create(Name.NS_DEFAULT_URI, "scripts"));
             if (scriptsProperty.isPresent()) {
                 try {
-                    return validateStatements(scriptsProperty.get().getStringValues());
+                    return validateStatements(scriptsProperty.get().getStringValues(), nodeContext.getFilePath().toString());
                 } catch (IOException e) {
                     return Collections.singleton(new ValidationMessage(ValidationMessageSeverity.ERROR, "IOException while parsing " + nodeContext.getFilePath() +" : " + e.getMessage(), e));
                 }
@@ -96,13 +99,12 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
         return null;
     }
 
-
     @Override
     @Nullable
     public Collection<ValidationMessage> validateJcrData(@NotNull InputStream input, @NotNull Path filePath, @NotNull Path basePath,
             @NotNull Map<String, Integer> nodePathsAndLineNumbers) throws IOException {
         Map<String, Object> config = deserializeOsgiConfiguration(getType(filePath.getFileName().toString()), input);
-        return validateConfig(config);
+        return validateConfig(config, filePath.toString());
     }
 
     public boolean shouldValidateJcrData(@NotNull Path filePath, @NotNull Path basePath) {
@@ -115,7 +117,7 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
         } else if (fileName.endsWith(".config")) {
             return OsgiConfigurationSerialization.CONFIG;
         } else if (fileName.endsWith(".cfg")) {
-            return OsgiConfigurationSerialization.CONFIG;
+            return OsgiConfigurationSerialization.CFG;
         } else {
             throw new IllegalArgumentException("Given file name " + fileName + " does not represent a known OSGi configuration serialization");
         }
@@ -143,7 +145,7 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
         return null;
     }
 
-    private Collection<ValidationMessage> validateConfig(Map<String, Object> config) throws IOException {
+    private Collection<ValidationMessage> validateConfig(Map<String, Object> config, String source) throws IOException {
         // https://sling.apache.org/documentation/bundles/repository-initialization.html#providing-repoinit-statements-from-osgi-factory-configurations
         // only evaluate scripts for now, references might have unresolvable URLs at the time of building (https://sling.apache.org/documentation/bundles/repository-initialization.html#references-to-urls-providing-raw-repoinit-statements)
         Object scripts = config.get("scripts");
@@ -151,19 +153,27 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
             return null;
         }
         if (scripts instanceof String[]) {
-            return validateStatements(Arrays.asList((String[])scripts));
+            return validateStatements(Arrays.asList((String[])scripts), source);
         } else if (scripts instanceof String) {
-            return  validateStatements((String)scripts).map(Collections::singletonList).orElse(null);
+            return validateStatements((String)scripts, source);
         } else {
             return Collections.singletonList(new ValidationMessage(ValidationMessageSeverity.ERROR, "OSGi config property 'scripts' must be of type String or String[]"));
         }
     }
 
-    private Collection<ValidationMessage> validateStatements(Collection<String> scripts) throws IOException {
+    private Collection<ValidationMessage> validateStatements(Collection<String> scripts, String source) throws IOException {
         List<ValidationMessage> validationMsgs = new ArrayList<>();
+        validationMsgs.add(new ValidationMessage(ValidationMessageSeverity.DEBUG, "Validating repoinit statements from " + source));
         for (String statements : scripts) {
             validateStatements(statements).ifPresent(validationMsgs::add);
         }
+        return validationMsgs;
+    }
+
+    private Collection<ValidationMessage> validateStatements(String statements, String source) throws IOException {
+        List<ValidationMessage> validationMsgs = new ArrayList<>();
+        validationMsgs.add(new ValidationMessage(ValidationMessageSeverity.DEBUG, "Validating repoinit statements from " + source));
+        validateStatements(statements).ifPresent(validationMsgs::add);
         return validationMsgs;
     }
 
