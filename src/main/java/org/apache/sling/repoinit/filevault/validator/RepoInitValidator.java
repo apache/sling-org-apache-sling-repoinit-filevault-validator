@@ -132,11 +132,11 @@ public class RepoInitValidator implements DocumentViewXmlValidator, GenericJcrDa
     Map<String, Object> deserializeOsgiConfiguration(@NotNull OsgiConfigurationSerialization serializationType, @NotNull InputStream input) throws IOException {
         switch(serializationType) {
         case CONFIG:
+            return convertToMap(org.apache.felix.cm.file.ConfigurationHandler.read(input));
+        case CFG:
             Properties properties = new Properties();
             properties.load(input);
             return convertToMap(properties);
-        case CFG:
-            return convertToMap(org.apache.felix.cm.file.ConfigurationHandler.read(input));
         case CFG_JSON:
             Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
             ConfigurationReader configReader = org.apache.felix.cm.json.Configurations.buildReader().build(reader);

@@ -17,7 +17,16 @@
 
 String buildLog = new File(basedir, 'build.log').text
 
-assert buildLog.contains('''[ERROR] ValidationViolation: "sling-repoinit: Invalid repoinit statement(s) detected: Encountered " <STRING> "invalid "" at line 1, column 1.
+assert buildLog.contains('''[ERROR] ValidationViolation: "sling-repoinit: Invalid repoinit statement(s) detected: Encountered " <STRING> "invalid "" at line 2, column 1.
 Was expecting:
     <EOF> 
     ", filePath=''' + "src${File.separator}main${File.separator}jcr_root${File.separator}apps${File.separator}test${File.separator}config${File.separator}org.apache.sling.jcr.repoinit.RepositoryInitializer~test1.config")
+assert buildLog.contains('''[ERROR] ValidationViolation: "sling-repoinit: Invalid repoinit statement(s) detected: Encountered " <STRING> "invalid "" at line 1, column 1.
+Was expecting:
+    <EOF> 
+    ", filePath=''' + "src${File.separator}main${File.separator}jcr_root${File.separator}apps${File.separator}test${File.separator}config${File.separator}org.apache.sling.jcr.repoinit.RepositoryInitializer~test2.cfg.json")
+assert buildLog.contains('''[ERROR] ValidationViolation: "sling-repoinit: Invalid repoinit statement(s) detected: Encountered " <STRING> "invalid "" at line 1, column 1.
+Was expecting:
+    <EOF> 
+    ", filePath=''' + "src${File.separator}main${File.separator}jcr_root${File.separator}apps${File.separator}test${File.separator}config${File.separator}org.apache.sling.jcr.repoinit.RepositoryInitializer~test3.cfg")
+assert buildLog.contains('[ERROR] Failed to execute goal org.apache.jackrabbit:filevault-package-maven-plugin:1.3.0:validate-files (default-validate-files) on project org.apache.sling.repoinit.filevault.validator.project1: Found 3 violation(s) (with severity=ERROR). Check above errors for details -> [Help 1]')
