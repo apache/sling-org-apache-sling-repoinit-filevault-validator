@@ -14,12 +14,11 @@
  License for the specific language governing permissions and limitations under
  the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.sling</groupId>
     <artifactId>org.apache.sling.repoinit.filevault.validator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Apache Sling Repoinit FileVault Validator</name>
     <description>FileVault validator which validates RepoInit OSGi configurations</description>
@@ -38,7 +37,8 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-repoinit-filevault-validator.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-repoinit-filevault-validator.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-repoinit-filevault-validator.git</url>
-    </scm>
+      <tag>org.apache.sling.repoinit.filevault.validator-1.0.0</tag>
+  </scm>
 
     <dependencies>
         <dependency>
