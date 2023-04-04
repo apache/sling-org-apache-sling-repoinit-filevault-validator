@@ -19,7 +19,7 @@ It emits validation error messages for invalid repoinit statements.
 # Usage with Maven
 
 You can use this validator with the [FileVault Package Maven Plugin][2] in version 1.3.2 or higher like this
-(although from an API level it is compatible with 1.3.0 and FileVault Validation 3.6.0 it needs minimally FileVault validation 3.6.6 due to [JCRVLT-637](https://issues.apache.org/jira/browse/JCRVLT-637), which is included in 1.3.2 by default).
+(although from an API level it is compatible with 1.3.0 and FileVault Validation 3.6.0 it needs minimally FileVault validation 3.6.4 or newer due to [JCRVLT-637](https://issues.apache.org/jira/browse/JCRVLT-637), which is included in 1.3.2 by default).
 
 ```
 <plugin>
