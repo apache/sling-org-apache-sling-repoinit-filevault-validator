@@ -18,7 +18,8 @@ It emits validation error messages for invalid repoinit statements.
 
 # Usage with Maven
 
-You can use this validator with the [FileVault Package Maven Plugin][2] in version 1.3.0 or higher like this
+You can use this validator with the [FileVault Package Maven Plugin][2] in version 1.3.2 or higher like this
+(although from an API level it is compatible with 1.3.0 and FileVault Validation 3.6.0 it needs minimally FileVault validation 3.6.4 or newer due to [JCRVLT-637](https://issues.apache.org/jira/browse/JCRVLT-637), which is included in 1.3.2 by default).
 
 ```
 <plugin>
@@ -30,7 +31,7 @@ You can use this validator with the [FileVault Package Maven Plugin][2] in versi
       <artifactId>org.apache.sling.repoinit.filevault.validator</artifactId>
       <version><latestversion></version>
     </dependency>
-    <!-- use the following dependency to optionally overwrite the used repoinit parser version (default=1.8.0) -->
+    <!-- use the following dependency to optionally overwrite the used repoinit parser version (default=1.9.0) -->
     <dependency>
       <groupId>org.apache.sling</groupId>
       <artifactId>org.apache.sling.repoinit.parser</artifactId>
