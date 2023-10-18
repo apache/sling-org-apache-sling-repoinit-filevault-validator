@@ -1,0 +1,20 @@
+github:
+  description: "Apache Sling Repoinit FileVault Validator"
+  homepage: "https://sling.apache.org/"
+  labels:
+  - "java"
+  - "sling"
+  - "jackrabbit"
+  - "filevault"
+  - "validator"
+  - "repoinit"
+  autolink_jira:
+  - "SLING"
+  - "OAK"
+  - "JCR"
+  - "JCRVLT"
+  - "INFRA"
+  - "FELIX"
+  - "MNG"
+notifications:
+  jira_options: "link"
