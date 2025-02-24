@@ -26,11 +26,12 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling</artifactId>
-        <version>49</version>
+        <version>62</version>
     </parent>
 
     <properties>
         <sling.java.version>8</sling.java.version>
+        <project.build.outputTimestamp>2025-02-24T00:00:00Z</project.build.outputTimestamp>
     </properties>
 
      <scm>
